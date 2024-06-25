@@ -6,6 +6,9 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium_recaptcha_solver import RecaptchaSolver
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 
 
 class CalculatorServicer(python_bridge_pb2_grpc.PythonBridgeServicer):
@@ -14,7 +17,7 @@ class CalculatorServicer(python_bridge_pb2_grpc.PythonBridgeServicer):
         port = request.port
         chrome_options = Options()
         chrome_options.add_experimental_option("debuggerAddress", f"{ip}:{port}")
-        driver = webdriver.Chrome(options=chrome_options)
+        driver = webdriver.Chrome(options=chrome_options, service=ChromeService(ChromeDriverManager().install()))
         recaptcha_iframe = driver.find_element(By.XPATH, '//iframe[@title="reCAPTCHA"]')
         solver = RecaptchaSolver(driver=driver)
         solver.click_recaptcha_v2(iframe=recaptcha_iframe)
